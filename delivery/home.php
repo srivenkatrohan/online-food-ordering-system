@@ -2,9 +2,6 @@
 <html>
 <head>
 	<title>Home</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" type="text/css" href="../css/nav.css">
-	<link href="https://fonts.googleapis.com/css?family=Italianno&display=swap" rel="stylesheet">
 	<style type="text/css">
 		a{
 			color: black;
@@ -14,27 +11,11 @@
 	</style>
 </head>
 <body>
-	<div class="navbar">
-		<a href="home.php">Home</a>
-		<a href="past_orders.php">Past Orders</a>
-		<center>
-		    <p class="title_app">Online Food Ordering System</p>
-		</center>
-		<div class="dropdown" style="float:right; padding-right:1px">
-			<button class="dropbtn"><span>Account <i class="fa fa-caret-down"></i></span>
-			</button>
-			<div class="dropdown-content">
-			  <a href="../edit_profile.php?role=Delivery">Edit Profile</a>
-			  <a href="../logout.php">Logout</a>
-			</div>
-	  	</div>
-	</div>
-	<center><p><b>ACTIVE ORDER</b></p></center>
-	<hr><hr>
-	<br><br>
 	<?php
 		include '../connection.php';
+		include 'delivery_topnav.php';
 		session_start();
+		echo "<center><p><b>ACTIVE ORDER</b></p></center><hr><hr><br><br>";
 		$login_id = $_SESSION['login_id'];
 		$query = "SELECT * FROM delivery WHERE person_id = $login_id";
 		$res = mysqli_query($conn, $query);
@@ -43,7 +24,10 @@
 			$order_id = $row['order_id'];
 			$order_query = "SELECT * FROM orders WHERE id = ".$row['order_id'];
 			$order_res = mysqli_query($conn, $order_query);
-			$order_row = mysqli_fetch_assoc($order_res); 
+			$order_row = mysqli_fetch_assoc($order_res);
+			if($row['status'] == 0){
+				echo "<script>alert('Order Id: #".$row['order_id']." Received')</script>"; 
+			}
 			echo "Order ID: ".$order_row['id'];
 			echo "<br>Date: ".$order_row['date'];
 			$customer_name_query = "SELECT * FROM users WHERE id=".$order_row['customer_id'];
@@ -92,6 +76,8 @@
 			}
 
 			echo "</table>";
+		}else{
+			echo "<center><b>No Orders to Display</b></center>";
 		}
 
 	?>

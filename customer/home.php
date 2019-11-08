@@ -1,9 +1,6 @@
 <html>
 <head>
 	<title>Home</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link href="https://fonts.googleapis.com/css?family=Italianno&display=swap" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="../css/nav.css">
 	<style type="text/css">
 		.title {
             color: #FC8019;
@@ -43,22 +40,24 @@
 			$("#hotel_submit").click(function(){
 				var table = "items";
 				var hotelname = $('#hotel option:selected').text();
-				//alert(table);
-				var itemtable = $('#item_table');
-				//var formid = $('#form_id');
-				itemtable.html("<tr><th>Item</th><th>Price</th><th>Quantity</th></tr>");
-				$.ajax({
-					type: 'GET',
-					url: '../get_json.php?textbox='+table,
-					success: function(values){
-						$.each(JSON.parse(values), function(i, value) {
-							if(hotelname == value.hotel_name && value.deleted == 0){
-								itemtable.append("<tr><td>"+value.item_name+"</td><td>"+value.price+"</td><td><input type=\"number\" name=\""+value.id+"\"></td></tr>");
-							}
-						});
-					}
-				});
-				//form_id.append("");
+				if(hotelname == '--Select--'){
+					alert("Select Hotel Name");
+				}else{
+					var itemtable = $('#item_table');
+					itemtable.html("<tr><th>Item</th><th>Price</th><th>Quantity</th></tr>");
+					$.ajax({
+						type: 'GET',
+						url: '../get_json.php?textbox='+table,
+						success: function(values){
+							$.each(JSON.parse(values), function(i, value) {
+								if(hotelname == value.hotel_name && value.deleted == 0){
+									itemtable.append("<tr><td>"+value.item_name+"</td><td>"+value.price+"</td><td><input type=\"number\" name=\""+value.id+"\"></td></tr>");
+								}
+							});
+						}
+					});
+					$('#button_div').html('<button type="submit" name="submit">Place</button>');
+				}
 			});
 		});
 	</script>
@@ -66,34 +65,14 @@
 <body>
 	<?php
 		include '../connection.php';
+		include 'customer_topnav.php';
 		session_start();
 		$name = $_SESSION['name'];
 	?>
-	<div class="navbar">
-		<a href="home.php">Home</a>
-		<div class="dropdown">
-			<button class="dropbtn">Orders <i class="fa fa-caret-down"></i>
-			</button>
-			<div class="dropdown-content">
-			  <a href="all_orders.php?status=active">Active Orders</a>
-			  <a href="all_orders.php?status=past">Past Orders</a>
-			</div>
-	  	</div>
-	  	<center>
-            <p class="title">Online Food Ordering System</p>
-        </center>
-		<div class="dropdown" style="float:right; padding-right:1px">
-			<button class="dropbtn">Account <i class="fa fa-caret-down"></i></span>
-			</button>
-			<div class="dropdown-content">
-			  <a href="../edit_profile.php?role=Customer">Edit Profile</a>
-			  <a href="../logout.php">Logout</a>
-			</div>
-	  	</div>
-	</div>
+	
 	<br>
 	<center>
-		<form method="get">
+		<form method="get" id="form_id">
 		<label>Select Hotel:</label>
 			<?php 
 					$list=mysqli_query($conn, "select * from users where role='Hotel'"); 
@@ -115,14 +94,12 @@
 			</br>
 		
 			<table id="item_table">
-				<tr>
-					<th>Item</th>
-					<th>Price</th>
-					<th>Quantity</th>
-				</tr>
 				
 			</table>
-			<button type="submit" name="submit">Place</button>
+			<div id="button_div">
+				
+			</div>
+			
 		</form>
 
 	</center>
@@ -149,7 +126,8 @@
 		while($row = mysqli_fetch_row($result)){
 			//echo $_GET[$row[0]];
 			$quant = $_GET[$row[0]];
-			if($quant != 0){
+			//echo $quant;
+			if($quant > 0){
 				array_push($item_id, $row[0]);
 				array_push($item_name, $row[2]);
 				array_push($item_quantity, $quant);

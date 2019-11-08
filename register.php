@@ -25,7 +25,7 @@
                 $password .= $salt;
                 $hash = hash("SHA256", $password);
 
-                $sql = "INSERT INTO USERS(role, name, username, password, salt, email, address, area, contact) VALUES('$role', '$name', '$username', '$hash', '$salt', '$email', '$address', '$area', '$contact')";
+                $sql = "INSERT INTO users(role, name, username, password, salt, email, address, area, contact) VALUES('$role', '$name', '$username', '$hash', '$salt', '$email', '$address', '$area', '$contact')";
                
                 if (!mysqli_query($conn, $sql))
                 {

@@ -7,9 +7,6 @@
 <html>
 	<head>
 		<title>Hotel</title>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-		<link rel="stylesheet" type="text/css" href="../css/nav.css">
-		<link href="https://fonts.googleapis.com/css?family=Italianno&display=swap" rel="stylesheet">
 		<style type="text/css">
 			a{
 				color: black;
@@ -39,22 +36,7 @@
 		</style>
 	</head>
 	<body>
-		<div class="navbar">
-			<a href="home.php">Home</a>
-			<a href="menu.php">Menu</a>
-			<a href="home.php?status=1">Past Orders</a>
-			<center>
-			    <p class="title_app">Online Food Ordering System</p>
-			</center>
-			<div class="dropdown" style="float:right; padding-right:1px">
-				<button class="dropbtn"><span>Account <i class="fa fa-caret-down"></i></span>
-				</button>
-				<div class="dropdown-content">
-				  <a href="../edit_profile.php?role=Hotel">Edit Profile</a>
-				  <a href="../logout.php">Logout</a>
-				</div>
-		  	</div>
-		</div>
+		<?php include 'hotel_topnav.php'?>
 		<center>
 			<table id="hotel_table" border="2">
 				<tr>
@@ -65,19 +47,21 @@
 				</tr>
 				<?php
 					//ALTER TABLE TABLENAME AUTO_INCREMENT=1;
-					$sql = "SELECT id, item_name, price FROM ITEMS WHERE hotel_name='$name' AND deleted=0";
+					$sql = "SELECT * FROM items WHERE hotel_name='$name'";
 					$query = mysqli_query($conn, $sql);
 					$i=1;
 					while($res=mysqli_fetch_array($query)){
-				?>
-				<tr>
-					<td><?php echo $i; $i++;?></td>
-					<td><?php echo $res['item_name']?></td>
-					<td><?php echo $res['price']?></td>
-					<td><button value="Update"><a href="update_item.php?id=<?php echo $res['id'];?>">Update</a></button>
-						<button value="Delete"><a href="delete_item.php?id=<?php echo $res['id'];?>">Delete</a></button></td>
-				</tr>
-				<?php
+						echo "<tr>
+						<td>".$i++."</td>
+						<td>".$res['item_name']."</td>
+						<td>".$res['price']."</td>";
+						if($res['deleted'] == 0){
+							echo '<td><button value="Update"><a href="update_item.php?id='.$res['id'].'">Update</a></button>';
+							echo '<button value="Delete"><a href="delete_item.php?id='.$res['id'].'">Delete</a></button></td>';
+						}else{
+							echo '<td><button value="Restore"><a href="restore_item.php?id='.$res['id'].'">Restore</a></button></td>';
+						}
+						echo "</tr>";
 					}
 				?>
 			</table>

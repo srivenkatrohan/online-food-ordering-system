@@ -2,9 +2,6 @@
 <html>
 <head>
 	<title>Home</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link href="https://fonts.googleapis.com/css?family=Italianno&display=swap" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="../css/nav.css">
 	<style type="text/css">
 		.title {
             color: #FC8019;
@@ -25,45 +22,50 @@
 <body>
 	<?php
 		include '../connection.php';
+		include 'hotel_topnav.php';
 		session_start();
 		$name = $_SESSION['name'];
-	?>
-	<div class="navbar">
-		<a href="home.php">Home</a>
-		<a href="menu.php">Menu</a>
-		<a href="home.php?status=1">Past Orders</a>
-		<center>
-            <p class="title">Online Food Ordering System</p>
-        </center>
-		<div class="dropdown" style="float:right; padding-right:1px">
-			<button class="dropbtn"><span>Account <i class="fa fa-caret-down"></i></span>
-			</button>
-			<div class="dropdown-content">
-			  <a href="../edit_profile.php?role=Hotel">Edit Profile</a>
-			  <a href="../logout.php">Logout</a>
-			</div>
-	  	</div>
-	</div>
-	
-	
-	<?php
 		$login_id = $_SESSION['login_id'];
 		if(isset($_GET['status'])){
 			echo '<center><p><b>PAST ORDERS</b></p></center>';
 			$query = "SELECT * FROM orders WHERE hotel_id = $login_id AND status<=0";
 		}else{
 			echo '<center><p><b>ACTIVE ORDERS</b></p></center>';
-			$query = "SELECT * FROM orders WHERE hotel_id = $login_id AND status>0";
+			$query = "SELECT * FROM orders WHERE hotel_id = $login_id AND (status>0 OR notification = 1 OR notification = 3 OR notification = 4)";
 		}
 
 		echo "<hr><hr>
 		<br><br>";
 		$res = mysqli_query($conn, $query);
-		if(!$res){
-			mysqli_error($conn);
+		if(mysqli_num_rows($res) == 0){
+			echo "<center><b>No Orders to Display</b></center>";
 		}
 		else{
 			while($row = mysqli_fetch_assoc($res)){
+				$update_query;
+				if($row['notification'] == 1 && ($row['status'] == 3 || $row['status'] == -1)){
+					$update_query = "UPDATE orders SET notification = 0 WHERE id = ".$row['id'];
+					if($row['status'] == 3){
+						echo "<script>alert('Order ID: #".$row['id']." Received')</script>";
+					}else{
+						echo "<script>alert('Order ID: #".$row['id']." Cancelled By Customer')</script>";
+					}
+				}
+				else if(($row['status'] == 0 || $row['status'] == 1) && ($row['notification'] == 3 || $row['notification'] == 4)){
+					if($row['notification'] == 3){
+						$update_query = "UPDATE orders SET notification = -4 WHERE id = ".$row['id'];
+					}else{
+						$update_query = "UPDATE orders SET notification = 5 WHERE id = ".$row['id'];
+					}
+					if($row['status'] == 0){
+						echo "<script>alert('Order ID: #".$row['id']." Delivered Successfully')</script>";
+					}else{
+						echo "<script>alert('Order ID: #".$row['id']." Accepted by Delivery Person')</script>";
+					}
+				}
+				if(isset($update_query)){
+					mysqli_query($conn, $update_query);
+				}
 				echo "<b>Order ID: </b>".$row['id'];
 				echo "<br><b>Date: </b>".$row['date'];
 				$name_query = "SELECT * FROM users WHERE id=".$row['customer_id'];
@@ -97,8 +99,10 @@
 					echo "Delivered Successfully";
 				}else if($status == -1){
 					echo "Cancelled by Customer";
+					echo "<br><b>Description: </b>".$row['description'];
 				}else{
 					echo "Cancelled by Hotel";
+					echo "<br><b>Description: </b>".$row['description'];
 				}
 				echo "<br>";
 				$query2 = "SELECT * FROM order_details WHERE order_id = ".$row['id'];
@@ -119,15 +123,15 @@
 				$order_res = mysqli_query($conn, $order_query);
 				if($status == 3){
 					echo '<tr><td><button><a href="accept.php?id='.$row['id'].'">Accept</a></button></td><td>
-						<button><a href="../cancel.php?id='.$row['id'].'&val=hotel">Cancel</a></button>
+						<button><a href="cancel.php?id='.$row['id'].'&val=hotel">Cancel</a></button>
 					    </td></tr>';
 				}
 				else if($status == 2 && mysqli_num_rows($order_res) == 0){
 					
 
-					echo '<tr><td></td><td>
+					echo '<tr><td>
 						<button><a href="deliver.php?id='.$row['id'].'">Deliver</a></button>
-					    </td></tr>';
+					    </td><td><button><a href="cancel.php?id='.$row['id'].'&val=hotel">Cancel</a></button></td></tr>';
 					
 				}
 				echo "</table>";

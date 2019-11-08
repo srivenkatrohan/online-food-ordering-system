@@ -1,5 +1,7 @@
 <?php
 	include '../connection.php';
+	session_start();
+	$login_id = $_SESSION['login_id'];
 	if (isset($_GET['id'])) {
 		$order_id = $_GET['id'];
 		$order_query = 'SELECT * FROM orders  WHERE id='.$order_id;
@@ -13,7 +15,12 @@
 			$delivery_person_query = 'SELECT * FROM users WHERE id='.$delivery_row['person_id'];
 			$delivery_person_res = mysqli_query($conn, $delivery_person_query);
 			$delivery_person_row = mysqli_fetch_assoc($delivery_person_res);
-			if($delivery_person_row['area'] == $order_row['area']){
+
+			$hotel_query = 'SELECT * FROM users WHERE id='.$login_id;
+			$hotel_res = mysqli_query($conn, $hotel_query);
+			$hotel_row = mysqli_fetch_assoc($hotel_res);
+
+			if($delivery_person_row['area'] == $hotel_row['area']){
 				$flag = 1;
 				$update_query = "UPDATE delivery SET order_id = ".$order_id." WHERE person_id = ".$delivery_row['person_id'];
 				mysqli_query($conn, $update_query);
