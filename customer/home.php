@@ -43,6 +43,17 @@
 				if(hotelname == '--Select--'){
 					alert("Select Hotel Name");
 				}else{
+					$.ajax({
+						type: 'GET',
+						url: '../get_json.php?textbox=users',
+						success: function(values){
+							$.each(JSON.parse(values), function(i, value) {
+								if(hotelname == value.name){
+									$('#hotel_details').html("<b>Address:</b> "+value.address+"<br><b>Area:</b> "+value.area+"<br><b>Contact: </b>"+value.contact+"<br><b>Email: </b>"+value.email);
+								}
+							});
+						}
+					});
 					var itemtable = $('#item_table');
 					itemtable.html("<tr><th>Item</th><th>Price</th><th>Quantity</th></tr>");
 					$.ajax({
@@ -73,7 +84,7 @@
 	<br>
 	<center>
 		<form method="get" id="form_id">
-		<label>Select Hotel:</label>
+		<label><b>Select Hotel:</b></label>
 			<?php 
 					$list=mysqli_query($conn, "select * from users where role='Hotel'"); 
 			        
@@ -92,7 +103,12 @@
 			<button type="button" id="hotel_submit" value="Go" name="hotel_submit">Go</button>
 			</br>
 			</br>
-		
+
+			<div id="hotel_details">
+				
+			</div>
+			<br>
+
 			<table id="item_table">
 				
 			</table>

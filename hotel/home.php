@@ -51,7 +51,7 @@
 						echo "<script>alert('Order ID: #".$row['id']." Cancelled By Customer')</script>";
 					}
 				}
-				else if(($row['status'] == 0 || $row['status'] == 1) && ($row['notification'] == 3 || $row['notification'] == 4)){
+				else if(($row['status'] == 0 || $row['status'] == 1 || $row['status'] == -3) && ($row['notification'] == 3 || $row['notification'] == 4)){
 					if($row['notification'] == 3){
 						$update_query = "UPDATE orders SET notification = -4 WHERE id = ".$row['id'];
 					}else{
@@ -59,8 +59,10 @@
 					}
 					if($row['status'] == 0){
 						echo "<script>alert('Order ID: #".$row['id']." Delivered Successfully')</script>";
-					}else{
+					}else if($row['status'] == 1){
 						echo "<script>alert('Order ID: #".$row['id']." Accepted by Delivery Person')</script>";
+					}else{
+						echo "<script>alert('Order ID: #".$row['id']." Cancelled by Delivery Person')</script>";
 					}
 				}
 				if(isset($update_query)){
@@ -100,8 +102,11 @@
 				}else if($status == -1){
 					echo "Cancelled by Customer";
 					echo "<br><b>Description: </b>".$row['description'];
-				}else{
+				}else if($status == -2){
 					echo "Cancelled by Hotel";
+					echo "<br><b>Description: </b>".$row['description'];
+				}else{
+					echo "Cancelled by Delivery Person";
 					echo "<br><b>Description: </b>".$row['description'];
 				}
 				echo "<br>";
