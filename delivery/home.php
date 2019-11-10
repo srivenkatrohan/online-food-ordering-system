@@ -28,22 +28,22 @@
 			if($row['status'] == 0){
 				echo "<script>alert('Order Id: #".$row['order_id']." Received')</script>"; 
 			}
-			echo "Order ID: ".$order_row['id'];
-			echo "<br>Date: ".$order_row['date'];
+			echo "<b>Order ID: </b>".$order_row['id'];
+			echo "<br><b>Date: </b>".$order_row['date'];
 			$customer_name_query = "SELECT * FROM users WHERE id=".$order_row['customer_id'];
 			$customer_name_res = mysqli_query($conn, $customer_name_query);
 			$customer_name_row = mysqli_fetch_assoc($customer_name_res);
 			$status = $order_row['status'];
-			echo  "<br>Customer Name: ".$customer_name_row['name'];
-			echo "<br>Customer Contact: ".$customer_name_row['contact'];
-			echo "<br>Customer Address: ".$order_row['address'];
+			echo  "<br><b>Customer Name: </b>".$customer_name_row['name'];
+			echo "<br><b>Customer Contact: </b>".$customer_name_row['contact'];
+			echo "<br><b>Customer Address: </b>".$order_row['address'];
 			$hotel_name_query = "SELECT * FROM users WHERE id=".$order_row['hotel_id'];
 			$hotel_name_res = mysqli_query($conn, $hotel_name_query);
 			$hotel_name_row = mysqli_fetch_assoc($hotel_name_res);
-			echo  "<br>Hotel Name: ".$hotel_name_row['name'];
-			echo "<br>Hotel Contact: ".$hotel_name_row['contact'];
-			echo "<br>Hotel Address: ".$hotel_name_row['address'];
-			echo "<br>Area: ".$order_row['area'];
+			echo  "<br><b>Hotel Name: </b>".$hotel_name_row['name'];
+			echo "<br><b>Hotel Contact: </b>".$hotel_name_row['contact'];
+			echo "<br><b>Hotel Address: </b>".$hotel_name_row['address'];
+			echo "<br><b>Area: </b>".$order_row['area'];
 
 			echo "<br>";
 			$query2 = "SELECT * FROM order_details WHERE order_id = ".$order_row['id'];
@@ -73,6 +73,10 @@
 				echo '<tr><td></td><td>
 						<button><a href="delivered.php?id='.$row['order_id'].'">Delivered</a></button>
 					    </td>';
+
+				echo '<td>
+					<button><a href="cancel.php?id='.$row['order_id'].'">Cancel</a></button>
+				    </td></tr>';
 			}
 
 			echo "</table>";

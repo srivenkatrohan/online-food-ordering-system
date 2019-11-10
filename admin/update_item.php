@@ -8,7 +8,7 @@
 		$itemname = $_POST['item_name'];
 		$price = $_POST['price'];
 		$id = $_GET['id'];
-		$sql = "UPDATE ITEMS SET item_name='$itemname', price='$price' WHERE id='$id'";
+		$sql = "UPDATE items SET item_name='$itemname', price='$price' WHERE id='$id'";
 		$query = mysqli_query($conn, $sql);
 		header("location:food_menu.php");
 	}
